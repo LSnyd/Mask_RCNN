@@ -101,7 +101,7 @@ def compute_overlaps_masks(masks1, masks2):
     """Computes IoU overlaps between two sets of masks.
     masks1, masks2: [Height, Width, instances]
     """
-    
+
     # If either set of masks is empty return empty result
     if masks1.shape[-1] == 0 or masks2.shape[-1] == 0:
         return np.zeros((masks1.shape[-1], masks2.shape[-1]))
@@ -199,8 +199,8 @@ def box_refinement_graph(box, gt_box):
 
     dy = (gt_center_y - center_y) / height
     dx = (gt_center_x - center_x) / width
-    dh = tf.log(gt_height / height)
-    dw = tf.log(gt_width / width)
+    dh = tf.math.log(gt_height / height)
+    dw = tf.math.log(gt_width / width)
 
     result = tf.stack([dy, dx, dh, dw], axis=1)
     return result
@@ -665,6 +665,7 @@ def compute_matches(gt_boxes, gt_class_ids, gt_masks,
                     the matched ground truth box.
         overlaps: [pred_boxes, gt_boxes] IoU overlaps.
     """
+
     # Trim zero padding
     # TODO: cleaner to do zero unpadding upstream
     gt_boxes = trim_zeros(gt_boxes)
@@ -733,9 +734,13 @@ def compute_ap(gt_boxes, gt_class_ids, gt_masks,
     precisions = np.cumsum(pred_match > -1) / (np.arange(len(pred_match)) + 1)
     recalls = np.cumsum(pred_match > -1).astype(np.float32) / len(gt_match)
 
+    print(precisions.shape)
+
     # Pad with start and end values to simplify the math
     precisions = np.concatenate([[0], precisions, [0]])
     recalls = np.concatenate([[0], recalls, [1]])
+
+    print(precisions.shape)
 
     # Ensure precision values decrease but don't increase. This way, the
     # precision value at each recall threshold is the maximum it can be
@@ -757,14 +762,14 @@ def compute_ap_range(gt_box, gt_class_id, gt_mask,
     """Compute AP over a range or IoU thresholds. Default range is 0.5-0.95."""
     # Default is 0.5 to 0.95 with increments of 0.05
     iou_thresholds = iou_thresholds or np.arange(0.5, 1.0, 0.05)
-    
+
     # Compute AP over range of IoU thresholds
     AP = []
     for iou_threshold in iou_thresholds:
-        ap, precisions, recalls, overlaps =\
+        ap, precisions, recalls, overlaps = \
             compute_ap(gt_box, gt_class_id, gt_mask,
-                        pred_box, pred_class_id, pred_score, pred_mask,
-                        iou_threshold=iou_threshold)
+                       pred_box, pred_class_id, pred_score, pred_mask,
+                       iou_threshold=iou_threshold)
         if verbose:
             print("AP @{:.2f}:\t {:.3f}".format(iou_threshold, ap))
         AP.append(ap)
