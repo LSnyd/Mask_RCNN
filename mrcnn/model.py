@@ -25,7 +25,7 @@ from tensorflow.python.eager import context
 import tensorflow.keras.models as KM
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("./Mask_RCNN/")
+ROOT_DIR = os.path.abspath("./model_zoo/Mask_RCNN/")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
