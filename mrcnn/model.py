@@ -29,8 +29,8 @@ ROOT_DIR = os.path.abspath("./model_zoo/Mask_RCNN/")
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
-print("SYSPATH", sys.path)
-from mrcnn.utils import utils
+
+from mrcnn import utils
 
 
 # Requires TensorFlow 2.0+

@@ -21,11 +21,12 @@ from matplotlib.patches import Polygon
 import IPython.display
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("../")
+ROOT_DIR = os.path.abspath("./model_zoo/Mask_RCNN/")
+
 
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
-import utils
+from mrcnn import utils
 
 
 ############################################################
