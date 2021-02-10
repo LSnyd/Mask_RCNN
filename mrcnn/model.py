@@ -10,6 +10,7 @@ Written by Waleed Abdulla
 import os
 import datetime
 import re
+import sys
 import math
 from collections import OrderedDict
 import multiprocessing
@@ -22,6 +23,13 @@ import tensorflow.keras.layers as KE
 import tensorflow.keras.utils as KU
 from tensorflow.python.eager import context
 import tensorflow.keras.models as KM
+
+# Root directory of the project
+ROOT_DIR = os.path.abspath("../")
+
+# Import Mask RCNN
+sys.path.append(ROOT_DIR)  # To find local version of the library
+
 from mrcnn import utils
 
 # Requires TensorFlow 2.0+
