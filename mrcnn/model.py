@@ -22,7 +22,7 @@ import tensorflow.keras.layers as KE
 import tensorflow.keras.utils as KU
 from tensorflow.python.eager import context
 import tensorflow.keras.models as KM
-from model_zoo.mrcnn import utils
+import utils
 
 # Requires TensorFlow 2.0+
 from distutils.version import LooseVersion
