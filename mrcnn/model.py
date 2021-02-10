@@ -30,7 +30,8 @@ ROOT_DIR = os.path.abspath("../")
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
 
-from mrcnn import utils
+import utils
+
 
 # Requires TensorFlow 2.0+
 from distutils.version import LooseVersion
