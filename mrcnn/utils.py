@@ -33,7 +33,15 @@ COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0
 #  Labels
 ############################################################
 
-def flip_tooth_label(class_ids, existing_labels, ):
+def flip_tooth_label(class_ids, existing_labels):
+    """Flips labels of teeth (ToothIds).
+     class_ids: array [num_if_predicted_labels].
+     existing_labels: [num_of_existing_labels]
+
+    Returns: bbox array [num_instances, (y1, x1, y2, x2)].
+    """
+
+
     flip_label_dict = {
         "1": "2",
         "2": "1",
@@ -42,7 +50,6 @@ def flip_tooth_label(class_ids, existing_labels, ):
     }
 
     flipped_labels = []
-    temp = []
     for label in class_ids:
         pred_label = existing_labels[label]
         new_firstdigit = flip_label_dict[str(pred_label)[0]]
