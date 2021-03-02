@@ -22,14 +22,64 @@ import urllib.request
 import shutil
 import warnings
 from distutils.version import LooseVersion
+import matplotlib.pyplot as plt
+from numpy import random
 
 # URL from which to download the latest COCO trained weights
 COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5"
 
 
 ############################################################
+#  Labels
+############################################################
+
+def flip_tooth_label(class_ids, existing_labels, ):
+    flip_label_dict = {
+        "1": "2",
+        "2": "1",
+        "3": "4",
+        "4": "3",
+    }
+
+    flipped_labels = []
+    temp = []
+    for label in class_ids:
+        pred_label = existing_labels[label]
+        new_firstdigit = flip_label_dict[str(pred_label)[0]]
+
+        if len(str(pred_label)) == 2:
+            new_label = int(new_firstdigit + str(pred_label)[1])
+
+        else:
+            new_label = int(new_firstdigit)
+
+        new_idx = existing_labels.index(str(new_label))
+        flipped_labels.append(new_idx)
+
+    return np.array(flipped_labels)
+
+
+############################################################
 #  Bounding Boxes
 ############################################################
+
+def flip_bboxes(bbox, image):
+    """Flips bounding boxes from masks.
+     bbox: array [num_instances, (y1, x1, y2, x2)].
+     image: array [height, width, 3]
+
+    Returns: bbox array [num_instances, (y1, x1, y2, x2)].
+    """
+
+    image_center = (image.shape[0] // 2, image.shape[1] // 2)
+
+    bbox[:, [1, 3]] += 2 * (image_center - bbox[:, [1, 3]])
+    bounding_boxes_w = np.abs(bbox[:, 1] - bbox[:, 3])
+    bbox[:, 1] -= bounding_boxes_w
+    bbox[:, 3] += bounding_boxes_w
+
+    return bbox
+
 
 def extract_bboxes(mask):
     """Compute bounding boxes from masks.
@@ -55,6 +105,17 @@ def extract_bboxes(mask):
             x1, x2, y1, y2 = 0, 0, 0, 0
         boxes[i] = np.array([y1, x1, y2, x2])
     return boxes.astype(np.int32)
+
+
+def get_ax(rows=1, cols=1, size=16):
+    """Return a Matplotlib Axes array to be used in
+    all visualizations in the notebook. Provide a
+    central point to control graph sizes.
+
+    Adjust the size attribute to control how big to render images
+    """
+    _, ax = plt.subplots(rows, cols, figsize=(size * cols, size * rows))
+    return ax
 
 
 def compute_iou(box, boxes, box_area, boxes_area):
@@ -734,13 +795,9 @@ def compute_ap(gt_boxes, gt_class_ids, gt_masks,
     precisions = np.cumsum(pred_match > -1) / (np.arange(len(pred_match)) + 1)
     recalls = np.cumsum(pred_match > -1).astype(np.float32) / len(gt_match)
 
-    print(precisions.shape)
-
     # Pad with start and end values to simplify the math
     precisions = np.concatenate([[0], precisions, [0]])
     recalls = np.concatenate([[0], recalls, [1]])
-
-    print(precisions.shape)
 
     # Ensure precision values decrease but don't increase. This way, the
     # precision value at each recall threshold is the maximum it can be
